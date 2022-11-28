@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:video_player/video_player.dart';
+
 PostDetailModel postDetailModelFromJson(String str) => PostDetailModel.fromJson(json.decode(str));
 
 String postDetailModelToJson(PostDetailModel data) => json.encode(data.toJson());
@@ -188,7 +190,7 @@ class PostDetails {
     this.sharedBy,
     this.transcodeDetails,
     this.transcodeUid,
-    this.viewCount,
+    this.viewCount, required controller,
   });
 
   String? id;
@@ -226,6 +228,7 @@ class PostDetails {
   String? transcodeDetails;
   String? transcodeUid;
   int? viewCount;
+  VideoPlayerController? controller;
 
   factory PostDetails.fromJson(Map<String, dynamic> json) => PostDetails(
     id: json["_id"] == null ? null : json["_id"],
@@ -263,6 +266,7 @@ class PostDetails {
     transcodeDetails: json["transcodeDetails"] == null ? null : json["transcodeDetails"],
     transcodeUid: json["transcodeUid"] == null ? null : json["transcodeUid"],
     viewCount: json["viewCount"] == null ? null : json["viewCount"],
+    controller: json["controller"] == null ? null : json["controller"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -301,6 +305,7 @@ class PostDetails {
     "transcodeDetails": transcodeDetails == null ? null : transcodeDetails,
     "transcodeUid": transcodeUid == null ? null : transcodeUid,
     "viewCount": viewCount == null ? null : viewCount,
+    "controller": controller == null ? null : controller,
   };
 }
 

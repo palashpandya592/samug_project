@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loadmore/loadmore.dart';
 import 'package:samug_project/constant/app_colors.dart';
 import 'package:samug_project/constant/app_images.dart';
 import 'package:samug_project/constant/app_strings.dart';
@@ -14,6 +15,8 @@ import 'package:samug_project/utills/widget/app_bar.dart';
 import 'package:samug_project/utills/widget/search_field.dart';
 import 'package:samug_project/utills/widget/space_divider.dart';
 import 'package:video_player/video_player.dart';
+
+import '../service/api_service_class.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -28,6 +31,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
+    ApiService().postDetailApi();
+
     ambiguate(WidgetsBinding.instance)!.addObserver(this);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.black,
@@ -141,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                             color: AppColors.black)),
                                     subtitle: RichText(
                                       text: TextSpan(
-                                          text: '@afridi.ux',
+                                          text: '@${postDetail.accountId}',
                                           style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.w400,
                                               fontSize: 12,
@@ -351,20 +357,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                       commentContainer(
                                           image: AppImages.slap,
                                           background: AppColors.blue,
-                                          text: '5.2K'),
+                                          text: postDetail
+                                              .postDetails!.postLikes
+                                              .toString()),
                                       horizontalSpace(width: 10),
                                       commentContainer(
                                           image: AppImages.message,
-                                          text: '1.1K',
+                                          text: postDetail
+                                              .postDetails!.postCommentsCount
+                                              .toString(),
                                           background: AppColors.grey),
                                       commentContainer(
                                           image: AppImages.eye,
-                                          text: '362',
+                                          text: postDetail
+                                              .postDetails!.viewCount
+                                              .toString(),
                                           textColor: AppColors.purple),
                                       const Spacer(),
                                       Column(
                                         children: [
-                                          Text('Gift Dhan',
+                                          Text(
+                                              postDetail.postDetails!
+                                                  .postDhan![0].dhanCount
+                                                  .toString(),
                                               style: GoogleFonts.poppins(
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 10,

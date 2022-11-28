@@ -19,16 +19,36 @@ class HomeController extends GetxController {
   bool finishedPlaying = false;
   PostDetailModel postDetailModel = PostDetailModel();
 
+//  List<PostDetailModel> list = [];
+  ScrollController paginationController = ScrollController();
+  int listLength = 20;
+
+  int get count => list.length;
+
+  List<int> list = [];
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Future<void> onInit() async {
-    getPostDetailData(
+    await getPostDetailData(
         postDetailPayload: PostDetailPayload(
-             nextPage: 0,requestTime: 0,nextPageSugg: 0,mode: 2, groupId: 2,));
+      nextPage: 0,
+      requestTime: 0,
+      nextPageSugg: 0,
+      mode: 2,
+      groupId: 2,
+    ));
 
     ///video player
     controller = VideoPlayerController.network(
-        'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4')
-      ..initialize().then((_) {
+      '${postDetailModel.data!.fileUrlPrefix}${postDetailModel.data!.postDetails![0].postDetails!.postfiles}',
+      // 'https://cdn.samug.com/storage/post/videos/20221126/98-3bd5454e-8a05-4ae7-bd4d-b37eb16927c5.mp4'
+      //  'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+    )..initialize().then((_) {
         update();
       });
     controller!.addListener(() {
@@ -45,10 +65,13 @@ class HomeController extends GetxController {
     });
     try {
       await player.setAudioSource(AudioSource.uri(Uri.parse(
-          "https://file-examples.com/storage/fe4b6a81a0637fef794ccfe/2017/11/file_example_MP3_5MG.mp3")));
+        '${postDetailModel.data!.fileUrlPrefix}${postDetailModel.data!.postDetails![0].postDetails!.postfiles}',
+        // "https://file-examples.com/storage/fe4b6a81a0637fef794ccfe/2017/11/file_example_MP3_5MG.mp3"
+      )));
     } catch (e) {
       print("Error loading audio source: $e");
     }
+
     super.onInit();
   }
 

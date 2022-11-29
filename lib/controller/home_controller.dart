@@ -18,12 +18,12 @@ class HomeController extends GetxController {
   final player = AudioPlayer();
   bool finishedPlaying = false;
   PostDetailModel postDetailModel = PostDetailModel();
+  bool isLoading = false;
+  int groupId = 1;
 
   @override
   Future<void> onInit() async {
-    getPostDetailData(
-        postDetailPayload: PostDetailPayload(
-             nextPage: 0,requestTime: 0,nextPageSugg: 0,mode: 2, groupId: 2,));
+    getData(nextPage: 0, nextPageSugg: 0);
 
     ///video player
     controller = VideoPlayerController.network(
@@ -52,6 +52,32 @@ class HomeController extends GetxController {
     super.onInit();
   }
 
+  getData({required int nextPage, required int nextPageSugg, int? groupID}) {
+    groupId = groupID ?? 1;
+    postDetailModel = PostDetailModel();
+    update();
+    getPostDetailData(
+        postDetailPayload: PostDetailPayload(
+      nextPage: nextPage,
+      requestTime: 0,
+      nextPageSugg: nextPageSugg,
+      mode: 1,
+      groupId: groupID ?? 1,
+    ));
+  }
+
+  getMoreDataData({required int nextPage, required int nextPageSugg, int? groupID}) {
+    groupId = groupID ?? 1;
+    getPostDetailData(
+        postDetailPayload: PostDetailPayload(
+          nextPage: nextPage,
+          requestTime: 0,
+          nextPageSugg: nextPageSugg,
+          mode: 1,
+          groupId: groupID ?? 1,
+        ));
+  }
+
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       player.stop();
@@ -67,9 +93,20 @@ class HomeController extends GetxController {
               position, bufferedPosition, duration ?? Duration.zero));
 
   getPostDetailData({PostDetailPayload? postDetailPayload}) async {
-    postDetailModel = (await ApiService()
+    PostDetailModel getPostDetailModel = PostDetailModel();
+    getPostDetailModel = (await ApiService()
         .postDetailApi(postDetailPayload: postDetailPayload))!;
+    if (postDetailModel.data == null) {
+      postDetailModel = getPostDetailModel;
+    } else {
+      List<PostDetail>? postDetails = postDetailModel.data!.postDetails;
+      getPostDetailModel.data!.postDetails = [
+        ...postDetails!,
+        ...getPostDetailModel.data!.postDetails ?? []
+      ];
+      postDetailModel = getPostDetailModel;
+    }
     update();
-    return postDetailModel;
+    //return postDetailModel;
   }
 }

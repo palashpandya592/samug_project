@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:samug_project/constant/app_colors.dart';
 import 'package:samug_project/constant/app_images.dart';
 import 'package:samug_project/constant/app_strings.dart';
@@ -15,8 +14,6 @@ import 'package:samug_project/utills/widget/app_bar.dart';
 import 'package:samug_project/utills/widget/search_field.dart';
 import 'package:samug_project/utills/widget/space_divider.dart';
 import 'package:video_player/video_player.dart';
-
-import '../service/api_service_class.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -31,8 +28,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-
-    ApiService().postDetailApi();
 
     ambiguate(WidgetsBinding.instance)!.addObserver(this);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -91,9 +86,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: SingleChildScrollView(
+          controller: homeController.scrollController,
           child: GetBuilder<HomeController>(
-            init: HomeController(),
-            builder: (_) => _.postDetailModel.data == null
+            init: homeController,
+            builder: (_) => _.postDetailModel?.data == null ||
+                    homeController.isFirstLoadRunning
                 ? const Center(child: CircularProgressIndicator())
                 : Column(
                     children: [
@@ -103,21 +100,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       SizedBox(
                         height: 130,
                         child: ListView.builder(
+                            controller: homeController.postScrollController,
                             physics: const ScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
                             padding: const EdgeInsets.only(right: 0),
                             itemCount:
-                                _.postDetailModel.data!.postGroup!.length,
+                                _.postDetailModel?.data?.postGroup!.length,
                             itemBuilder: (context, index) {
                               PostGroup postGroup =
-                                  _.postDetailModel.data!.postGroup![index];
+                                  _.postDetailModel!.data!.postGroup![index];
                               return Padding(
                                   padding:
                                       const EdgeInsets.only(right: 15, top: 17),
                                   child: profileListCommon(
                                       image:
-                                          '${_.postDetailModel.data!.fileUrlPrefix}${postGroup.imagePath}',
+                                          '${_.postDetailModel!.data!.fileUrlPrefix}${postGroup.imagePath}',
                                       text: postGroup.groupName));
                             }),
                       ),
@@ -125,11 +123,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ListView.builder(
                           shrinkWrap: true,
                           itemCount:
-                              _.postDetailModel.data!.postDetails!.length,
+                              _.postDetailModel!.data!.postDetails!.length,
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
                             PostDetail postDetail =
-                                _.postDetailModel.data!.postDetails![index];
+                                _.postDetailModel!.data!.postDetails![index];
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 10),
                               child: Column(
@@ -138,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     contentPadding: EdgeInsets.zero,
                                     leading: CircleAvatar(
                                         backgroundImage: NetworkImage(
-                                            '${_.postDetailModel.data!.fileUrlPrefix}${postDetail.profileImage!}')),
+                                            '${_.postDetailModel!.data!.fileUrlPrefix}${postDetail.profileImage!}')),
                                     /**/
                                     title: Text(postDetail.fullName!,
                                         style: GoogleFonts.poppins(
@@ -176,13 +174,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     trailing: Wrap(
                                       children: [
                                         imageWithText(
-                                            text: postDetail.postDetails!
-                                                .postDhan![0].dhanCount
-                                                .toString()),
+                                            text: postDetail.postDetails
+                                                    ?.postDhan?[0].dhanCount
+                                                    .toString() ??
+                                                "50"),
                                         imageWithText(
                                             text: postDetail.postDetails!
-                                                .postDhan![0].dhanCount
-                                                .toString()),
+                                                    .postDhan?[0].dhanCount
+                                                    .toString() ??
+                                                "25"),
                                         horizontalSpace(width: 12),
                                         Padding(
                                           padding:
@@ -223,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                 Colors.grey,
                                             indicatorRadius: 4,
                                             children: slideShow(
-                                                _.postDetailModel.data!
+                                                _.postDetailModel!.data!
                                                     .fileUrlPrefix!,
                                                 postDetail
                                                     .postDetails!.postfiles!),
@@ -246,8 +246,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                               BorderRadius
                                                                   .circular(10),
                                                         ),
-                                                        child: VideoPlayer(
-                                                            _.controller!)),
+                                                        child: _.controller ==
+                                                                null
+                                                            ? Container()
+                                                            : VideoPlayer(
+                                                                _.controller!)),
                                                   ),
                                                   Positioned(
                                                     top: MediaQuery.of(context)
@@ -306,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                                             10),
                                                                     image: DecorationImage(
                                                                         image: NetworkImage(
-                                                                          '${_.postDetailModel.data!.fileUrlPrefix}${postDetail.postDetails!.postfiles}',
+                                                                          '${_.postDetailModel!.data!.fileUrlPrefix}${postDetail.postDetails!.postfiles}',
                                                                           //'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuxqMeF2C3HwYt2FQoHi69iREY6CgOKYMtng&usqp=CAU'
                                                                         ),
                                                                         fit: BoxFit.fill)),
@@ -377,9 +380,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                       Column(
                                         children: [
                                           Text(
-                                              postDetail.postDetails!
-                                                  .postDhan![0].dhanCount
-                                                  .toString(),
+                                              postDetail.postDetails
+                                                      ?.postDhan?[0].dhanCount
+                                                      .toString() ??
+                                                  "Gift Dhan",
                                               style: GoogleFonts.poppins(
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 10,
@@ -396,7 +400,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ],
                               ),
                             );
-                          })
+                          }),
+                      if (homeController.isLoadMoreRunning == true)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10, bottom: 40),
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                      if (homeController.hasNextPage == false)
+                        Container(
+                          padding: const EdgeInsets.only(top: 30, bottom: 40),
+                          color: Colors.amber,
+                          child: const Center(
+                            child: Text('You have fetched all of the content'),
+                          ),
+                        ),
                     ],
                   ),
           ),
@@ -426,18 +445,3 @@ RichText _convertHashtag(String text) {
     ),
   );
 }
-/* Row(
-                                    children: [
-                                      Text('#Creative',
-                                          style: `GoogleFonts.poppins(
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 12,
-                                              color: AppColors.darkBlue)),
-                                      horizontalSpace(width: 5),
-                                      Text('#Photography',
-                                          style: GoogleFonts.poppins(
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 12,
-                                              color: AppColors.darkBlue)),
-                                    ],
-                                  ),*/

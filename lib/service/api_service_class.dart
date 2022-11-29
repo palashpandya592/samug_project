@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:samug_project/model/post_detail_model.dart';
 import 'package:samug_project/model/post_detail_payload.dart';
@@ -26,6 +24,5 @@ class ApiService {
     } catch (e) {
       print("error $e");
     }
-
   }
 }

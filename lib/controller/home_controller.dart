@@ -14,6 +14,7 @@ class HomeController extends GetxController {
   VideoPlayerController? controller;
   final player = AudioPlayer();
   bool finishedPlaying = false;
+  List<PostDetail> postDetailsList = [];
   PostDetailModel? postDetailModel;
   PostDetailModel? fake;
 
@@ -22,7 +23,14 @@ class HomeController extends GetxController {
   ScrollController scrollController = ScrollController();
   ScrollController postScrollController = ScrollController();
 
-  bool isLoadMoreRunning = false;
+  // bool isLoadMoreRunning = false;
+
+  bool _isLoadMoreRunning = false;
+  bool get isLoadMoreRunning => _isLoadMoreRunning;
+  set isLoadMoreRunning(value) {
+    _isLoadMoreRunning = value;
+  }
+
   bool hasNextPage = true;
 
   @override
@@ -36,12 +44,11 @@ class HomeController extends GetxController {
       groupId: 0,
     ));
 
-    postScrollController.addListener(() async {
+/*    postScrollController.addListener(() async {
       if (postScrollController.position.pixels ==
           postScrollController.position.maxScrollExtent) {
         print("dkjfdshf===>${postScrollController.position.pixels}");
         print("called 1");
-        fake = postDetailModel;
         await getPostDetailData(
             postDetailPayload: PostDetailPayload(
           nextPage: postDetailModel?.data?.nextPage,
@@ -52,14 +59,13 @@ class HomeController extends GetxController {
         ));
       }
       update();
-    });
+    });*/
 
     scrollController.addListener(() async {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
         isLoadMoreRunning = true;
         print("called");
-        fake = postDetailModel;
         await getPostDetailData(
             postDetailPayload: PostDetailPayload(
           nextPage: postDetailModel?.data?.nextPage,
@@ -70,15 +76,13 @@ class HomeController extends GetxController {
         ));
       }
       isLoadMoreRunning = false;
-      update();
     });
     //scrollController.addListener(loadMore);
 
     ///video player
     controller = VideoPlayerController.network(
-        '${postDetailModel?.data?.fileUrlPrefix}${postDetailModel?.data?.postDetails?[0].postDetails?.postfiles}' ??
-            'https://cdn.samug.com/storage/post/videos/20221126/98-3bd5454e-8a05-4ae7-bd4d-b37eb16927c5.mp4'
-        //  'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+        '${postDetailModel?.data?.fileUrlPrefix}${postDetailModel?.data?.postDetails?[0].postDetails?.postfiles}'
+        // 'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
         )
       ..initialize().then((_) {
         update();
@@ -131,7 +135,6 @@ class HomeController extends GetxController {
                 groupId: 0,
                 mode: 1,
                 nextPageSugg: postDetailModel?.data?.nextPageSugg));
-        update();
       } catch (err) {
         print('Something went wrong!');
       }
@@ -159,6 +162,7 @@ class HomeController extends GetxController {
   getPostDetailData({PostDetailPayload? postDetailPayload}) async {
     postDetailModel =
         await ApiService().postDetailApi(postDetailPayload: postDetailPayload);
+    postDetailsList.addAll(postDetailModel!.data!.postDetails!);
     update();
   }
 }

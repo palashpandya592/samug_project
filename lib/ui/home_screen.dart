@@ -122,12 +122,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       verticalSpace(height: 30),
                       ListView.builder(
                           shrinkWrap: true,
-                          itemCount:
-                              _.postDetailModel!.data!.postDetails!.length,
+                          itemCount: _.postDetailsList.length,
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
-                            PostDetail postDetail =
-                                _.postDetailModel!.data!.postDetails![index];
+                            PostDetail postDetail = _.postDetailsList[index];
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 10),
                               child: Column(
@@ -207,6 +205,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   ),
                                   verticalSpace(height: 5),
                                   Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       _convertHashtag(postDetail
                                           .postDetails!.postMetadata!),
@@ -436,6 +437,9 @@ RichText _convertHashtag(String text) {
     return List.from(t)..add("#${texts.first}");
   });
   return RichText(
+    textAlign: TextAlign.start,
+    overflow: TextOverflow.ellipsis,
+    softWrap: true,
     text: TextSpan(
       children: [TextSpan(text: split.first)]..addAll(hashtags
           .map((text) => text.contains("#")

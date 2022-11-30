@@ -1,3 +1,4 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
@@ -10,6 +11,7 @@ import 'package:samug_project/constant/app_strings.dart';
 import 'package:samug_project/controller/home_controller.dart';
 import 'package:samug_project/model/post_detail_model.dart';
 import 'package:samug_project/ui/video_player.dart';
+import 'package:samug_project/ui/audio_player.dart';
 import 'package:samug_project/ui/widget/common_widget.dart';
 import 'package:samug_project/utills/widget/app_bar.dart';
 import 'package:samug_project/utills/widget/search_field.dart';
@@ -272,10 +274,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                   2
                                               ? GestureDetector(
                                                   onTap: () {
-                                                    _.getVideoLoad(
-                                                        url:
-                                                            '${_.postDetailModel?.data?.fileUrlPrefix}${postDetail.postDetails?.postfiles![0]}');
-                                                    _.controller!.play();
+                                                    // _.getVideoLoad(
+                                                    //     url:
+                                                    //         '${_.postDetailModel?.data?.fileUrlPrefix}${postDetail.postDetails?.postfiles![0]}');
+                                                    // _.controller!.play();
                                                   },
                                                   child: Stack(
                                                     children: [
@@ -288,15 +290,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                                     .circular(
                                                                         10),
                                                           ),
-                                                          child: _.controller ==
-                                                                  null
-                                                              ? Container()
-                                                              : GestureDetector(
-                                                                  onTap: () {},
-                                                                  child: VideoPlayer(
-                                                                      _.controller!),
-                                                                )),
-                                                      Positioned(
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () {},
+                                                            child: ChewieListItem(
+                                                                videoPlayerController:
+                                                                    VideoPlayerController
+                                                                        .network(
+                                                                            '${_.postDetailModel?.data?.fileUrlPrefix}${postDetail.postDetails?.postfiles![0]}'),
+                                                                looping: true),
+                                                          )),
+                                                      /* Positioned(
                                                         top: MediaQuery.of(
                                                                     context)
                                                                 .size
@@ -309,11 +313,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                             2.6,
                                                         child: IconButton(
                                                           onPressed: () {
-                                                            _.getVideoLoad(
-                                                                url:
-                                                                    '${_.postDetailModel?.data?.fileUrlPrefix}${postDetail.postDetails?.postfiles![0]}');
-                                                            _.controller!
-                                                                .play();
+                                                            // _.getVideoLoad(
+                                                            //     url:
+                                                            //         '${_.postDetailModel?.data?.fileUrlPrefix}${postDetail.postDetails?.postfiles![0]}');
+                                                            // _.controller!
+                                                            //     .play();
                                                           },
                                                           icon: CircleAvatar(
                                                             radius: 20,
@@ -334,7 +338,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
+                                                      ),*/
                                                     ],
                                                   ),
                                                 )

@@ -1,6 +1,7 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart' as r;
 import 'package:samug_project/model/post_detail_model.dart';
@@ -24,6 +25,11 @@ class HomeController extends GetxController {
 
   bool isLoadMoreRunning = false;
   bool hasNextPage = true;
+
+  DateTime date1 = DateTime.now();
+  DateTime? date2;
+  int? dayDuration;
+  int? minutesDuration;
 
   @override
   Future<void> onInit() async {
@@ -72,21 +78,10 @@ class HomeController extends GetxController {
       isLoadMoreRunning = false;
       update();
     });
-    //scrollController.addListener(loadMore);
 
-    ///video player
-    controller = VideoPlayerController.network(
-        '${postDetailModel?.data?.fileUrlPrefix}${postDetailModel?.data?.postDetails?[0].postDetails?.postfiles}' ??
-            'https://cdn.samug.com/storage/post/videos/20221126/98-3bd5454e-8a05-4ae7-bd4d-b37eb16927c5.mp4'
-        //  'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
-        )
-      ..initialize().then((_) {
-        update();
-      });
-    controller!.addListener(() {
-      finishedPlaying = true;
-      update();
-    });
+    getVideoLoad(
+        url:
+            '${postDetailModel!.data!.fileUrlPrefix}${postDetailModel!.data!.postDetails![0].postDetails!.postfiles}');
 
     ///audio player
     final session = await AudioSession.instance;
@@ -97,8 +92,11 @@ class HomeController extends GetxController {
     });
     try {
       await player.setAudioSource(AudioSource.uri(Uri.parse(
-        '${postDetailModel!.data!.fileUrlPrefix}${postDetailModel!.data!.postDetails![0].postDetails!.postfiles}',
-        // "https://file-examples.com/storage/fe4`b6a81a0637fef794ccfe/2017/11/file_example_MP3_5MG.mp3"
+        postDetailModel!.data!.postDetails![0].postDetails!.postfiles == null ||
+                postDetailModel!
+                    .data!.postDetails![0].postDetails!.postfiles!.isEmpty
+            ? "https://file-examples.com/storage/fe19e1a6e563854389e633c/2017/11/file_example_MP3_700KB.mp3"
+            : '${postDetailModel!.data!.fileUrlPrefix}${postDetailModel!.data!.postDetails![0].postDetails!.postfiles}',
       )));
     } catch (e) {
       print("Error loading audio source: $e");
@@ -106,11 +104,27 @@ class HomeController extends GetxController {
     super.onInit();
   }
 
+  getVideoLoad({String? url}) {
+    ///video player
+    controller = VideoPlayerController.network(url!)
+      ..initialize().then((_) {
+        update();
+      });
+    controller!.addListener(() {
+      finishedPlaying = true;
+      update();
+    });
+  }
+
   @override
   void dispose() {
     scrollController.addListener(loadMore);
     postScrollController.addListener(loadMore);
     super.dispose();
+  }
+
+  getUpdate() {
+    update();
   }
 
   void loadMore() async {
@@ -160,5 +174,18 @@ class HomeController extends GetxController {
     postDetailModel =
         await ApiService().postDetailApi(postDetailPayload: postDetailPayload);
     update();
+  }
+
+  getDurationInDate(apiDate) {
+    DateTime date1 = DateTime.now().toLocal();
+    DateTime date2 = DateTime.parse(apiDate).toLocal();
+    if (DateFormat('yyyy-MM-dd').format(DateTime.parse(apiDate).toLocal()) ==
+        DateFormat('yyyy-MM-dd').format(DateTime.now().toLocal())) {
+      minutesDuration = date1.difference(date2).inHours;
+      return minutesDuration;
+    } else {
+      dayDuration = date1.difference(date2).inDays;
+      return dayDuration;
+    }
   }
 }

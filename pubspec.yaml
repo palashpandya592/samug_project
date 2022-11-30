@@ -46,6 +46,7 @@ dependencies:
   loadmore: ^2.0.1
   intl: ^0.17.0
   chewie:
+  custom_refresh_indicator: ^2.0.1
 
 
 dev_dependencies:

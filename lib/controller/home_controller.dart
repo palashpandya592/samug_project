@@ -19,6 +19,7 @@ class HomeController extends GetxController {
   List<PostDetail> postDetailsList = [];
   PostDetailModel? postDetailModel;
   PostDetailModel? fake;
+  List<PostGroup>? postGroupList = [];
 
   bool isFirstLoadRunning = false;
 
@@ -28,7 +29,9 @@ class HomeController extends GetxController {
   // bool isLoadMoreRunning = false;
 
   bool _isLoadMoreRunning = false;
+
   bool get isLoadMoreRunning => _isLoadMoreRunning;
+
   set isLoadMoreRunning(value) {
     _isLoadMoreRunning = value;
   }
@@ -44,12 +47,12 @@ class HomeController extends GetxController {
   Future<void> onInit() async {
     await getPostDetailData(
         postDetailPayload: PostDetailPayload(
-          nextPage: 0,
-          requestTime: 0,
-          nextPageSugg: 0,
-          mode: 1,
-          groupId: 0,
-        ));
+      nextPage: 0,
+      requestTime: 0,
+      nextPageSugg: 0,
+      mode: 1,
+      groupId: 0,
+    ));
 
 /*    postScrollController.addListener(() async {
       if (postScrollController.position.pixels ==
@@ -75,32 +78,32 @@ class HomeController extends GetxController {
         print("called");
         await getPostDetailData(
             postDetailPayload: PostDetailPayload(
-              nextPage: postDetailModel?.data?.nextPage,
-              requestTime: 0,
-              nextPageSugg: postDetailModel?.data?.nextPageSugg,
-              mode: 1,
-              groupId: 0,
-            ));
+          nextPage: postDetailModel?.data?.nextPage,
+          requestTime: 0,
+          nextPageSugg: postDetailModel?.data?.nextPageSugg,
+          mode: 1,
+          groupId: 0,
+        ));
       }
       isLoadMoreRunning = false;
     });
 
     getVideoLoad(
         url:
-        '${postDetailModel!.data!.fileUrlPrefix}${postDetailModel!.data!.postDetails![0].postDetails!.postfiles}');
+            '${postDetailModel!.data!.fileUrlPrefix}${postDetailModel!.data!.postDetails![0].postDetails!.postfiles}');
 
     ///audio player
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.speech());
     player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-          print('A stream error occurred: $e');
-        });
+      print('A stream error occurred: $e');
+    });
     try {
       await player.setAudioSource(AudioSource.uri(Uri.parse(
         postDetailModel!.data!.postDetails![0].postDetails!.postfiles == null ||
-            postDetailModel!
-                .data!.postDetails![0].postDetails!.postfiles!.isEmpty
+                postDetailModel!
+                    .data!.postDetails![0].postDetails!.postfiles!.isEmpty
             ? "https://file-examples.com/storage/fe19e1a6e563854389e633c/2017/11/file_example_MP3_700KB.mp3"
             : '${postDetailModel!.data!.fileUrlPrefix}${postDetailModel!.data!.postDetails![0].postDetails!.postfiles}',
       )));
@@ -109,8 +112,8 @@ class HomeController extends GetxController {
     }
     super.onInit();
   }
-  ChewieController? chewieController;
 
+  ChewieController? chewieController;
 
   getVideoLoad({String? url}) {
     ///video player
@@ -174,13 +177,16 @@ class HomeController extends GetxController {
           player.positionStream,
           player.bufferedPositionStream,
           player.durationStream,
-              (position, bufferedPosition, duration) => PositionData(
+          (position, bufferedPosition, duration) => PositionData(
               position, bufferedPosition, duration ?? Duration.zero));
 
   getPostDetailData({PostDetailPayload? postDetailPayload}) async {
     postDetailModel =
-    await ApiService().postDetailApi(postDetailPayload: postDetailPayload);
-    postDetailsList.addAll(postDetailModel!.data!.postDetails!);
+        await ApiService().postDetailApi(postDetailPayload: postDetailPayload);
+    postDetailsList = postDetailModel!.data!.postDetails!;
+    if (postGroupList!.isEmpty) {
+      postGroupList = postDetailModel!.data!.postGroup!;
+    }
     update();
   }
 

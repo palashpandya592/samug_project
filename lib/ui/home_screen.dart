@@ -123,12 +123,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       verticalSpace(height: 30),
                       ListView.builder(
                           shrinkWrap: true,
-                          itemCount:
-                              _.postDetailModel!.data!.postDetails!.length,
+                          itemCount: _.postDetailsList.length,
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
-                            PostDetail postDetail =
-                                _.postDetailModel!.data!.postDetails![index];
+                            PostDetail postDetail = _.postDetailsList[index];
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 10),
                               child: GestureDetector(

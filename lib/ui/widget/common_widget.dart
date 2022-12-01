@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:samug_project/constant/app_colors.dart';
 import 'package:samug_project/constant/app_images.dart';
+import 'package:samug_project/constant/app_styles.dart';
 import 'package:samug_project/utills/widget/space_divider.dart';
 
 Widget imageWithText({String? text}) {
@@ -11,10 +12,8 @@ Widget imageWithText({String? text}) {
       children: [
         Image.asset(AppImages.doller, width: 20, height: 20),
         Text(text!,
-            style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w500,
-                fontSize: 10,
-                color: AppColors.purple)),
+            style: AppStyle.poppins400(
+                color: AppColors.purple, fontWeight: FontWeight.w500)),
       ],
     ),
   );
@@ -74,8 +73,7 @@ Widget profileListCommon({String? image, String? text, Color? color}) {
       verticalSpace(height: 5),
       Text(
         text!,
-        style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w400, fontSize: 10, color: AppColors.purple),
+        style: AppStyle.poppins400(color: AppColors.purple),
       )
     ],
   );

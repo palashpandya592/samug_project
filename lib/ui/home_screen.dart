@@ -269,15 +269,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                               BorderRadius
                                                                   .circular(10),
                                                         ),
-                                                        child: GestureDetector(
-                                                          onTap: () {},
-                                                          child: ChewieListItem(
-                                                              videoPlayerController:
-                                                                  VideoPlayerController
-                                                                      .network(
-                                                                          '${_.postDetailModel?.data?.fileUrlPrefix}${postDetail.postDetails?.postfiles![0]}'),
-                                                              looping: true),
-                                                        ),
+                                                        child: ChewieListItem(
+                                                            videoPlayerController:
+                                                                VideoPlayerController
+                                                                    .network(
+                                                                        '${_.postDetailModel?.data?.fileUrlPrefix}${postDetail.postDetails?.postfiles![0]}'),
+                                                            looping: true),
                                                       ),
                                                     ],
                                                   )

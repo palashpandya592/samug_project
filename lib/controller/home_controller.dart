@@ -104,7 +104,7 @@ class HomeController extends GetxController {
         postDetailModel!.data!.postDetails![0].postDetails!.postfiles == null ||
                 postDetailModel!
                     .data!.postDetails![0].postDetails!.postfiles!.isEmpty
-            ? "https://file-examples.com/storage/fe19e1a6e563854389e633c/2017/11/file_example_MP3_700KB.mp3"
+            ? "https://file-examples.com/storage/fe352586866388d59a8918d/2017/11/file_example_MP3_700KB.mp3"
             : '${postDetailModel!.data!.fileUrlPrefix}${postDetailModel!.data!.postDetails![0].postDetails!.postfiles}',
       )));
     } catch (e) {

@@ -104,8 +104,8 @@ class SeekBarState extends State<SeekBar> {
           bottom: 0.0,
           child: Text(
               RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                  .firstMatch("$_remaining")
-                  ?.group(1) ??
+                      .firstMatch("$_remaining")
+                      ?.group(1) ??
                   '$_remaining',
               style: Theme.of(context).textTheme.caption),
         ),
@@ -122,19 +122,19 @@ class HiddenThumbComponentShape extends SliderComponentShape {
 
   @override
   void paint(
-      PaintingContext context,
-      Offset center, {
-        required Animation<double> activationAnimation,
-        required Animation<double> enableAnimation,
-        required bool isDiscrete,
-        required TextPainter labelPainter,
-        required RenderBox parentBox,
-        required SliderThemeData sliderTheme,
-        required TextDirection textDirection,
-        required double value,
-        required double textScaleFactor,
-        required Size sizeWithOverflow,
-      }) {}
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+  }) {}
 }
 
 class PositionData {
@@ -153,7 +153,8 @@ void showSliderDialog({
   required double max,
   String valueSuffix = '',
   required Stream<double> stream,
-  required ValueChanged<double> onChanged, required double value,
+  required ValueChanged<double> onChanged,
+  required double value,
 }) {
   showDialog<void>(
     context: context,
@@ -195,7 +196,12 @@ class ControlButtons extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset(AppImages.audioCut,width: 20,height: 20),
+        GestureDetector(
+            onTap: () async {
+              await player
+                  .seek(Duration(seconds: player.position.inSeconds - 10));
+            },
+            child: Image.asset(AppImages.audioCut, width: 20, height: 20)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
           child: StreamBuilder<PlayerState>(
@@ -220,7 +226,8 @@ class ControlButtons extends StatelessWidget {
                       color: AppColors.darkBlueVideo, shape: BoxShape.circle),
                   child: Center(
                     child: IconButton(
-                      icon: const Icon(Icons.play_arrow, color: AppColors.white),
+                      icon:
+                          const Icon(Icons.play_arrow, color: AppColors.white),
                       onPressed: player.play,
                     ),
                   ),
@@ -251,7 +258,12 @@ class ControlButtons extends StatelessWidget {
             },
           ),
         ),
-        Image.asset(AppImages.audioCut,width: 20,height: 20),
+        GestureDetector(
+            onTap: () async {
+              await player
+                  .seek(Duration(seconds: player.position.inSeconds + 10));
+            },
+            child: Image.asset(AppImages.audioCut, width: 20, height: 20)),
       ],
     );
   }
